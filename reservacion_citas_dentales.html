@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservar cita odontológica</title>
+  <style>
+    :root {
+      --primary: #0a7ea4;
+      --primary-dark: #075d78;
+      --accent: #25d366;
+      --bg: #f4f9fb;
+      --card: #ffffff;
+      --text: #1f2d3a;
+      --muted: #6b7c8a;
+      --border: #d5e3ea;
+      --error: #d93025;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      padding: 2.5rem 1rem 3.5rem;
+      text-align: center;
+    }
+
+    header h1 { font-size: 1.9rem; margin-bottom: .4rem; }
+    header p { opacity: .9; }
+
+    main {
+      max-width: 640px;
+      margin: -2.5rem auto 2rem;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+    }
+
+    .card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1.25rem;
+      color: var(--primary-dark);
+    }
+
+    .field { margin-bottom: 1.1rem; }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: .35rem;
+      font-size: .95rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: .7rem .85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font: inherit;
+      background: #fff;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(10, 126, 164, .15);
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .error-msg {
+      color: var(--error);
+      font-size: .85rem;
+      margin-top: .3rem;
+      display: none;
+    }
+
+    .field.invalid input,
+    .field.invalid select { border-color: var(--error); }
+    .field.invalid .error-msg { display: block; }
+
+    .services {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .6rem;
+    }
+
+    .service-option input { display: none; }
+
+    .service-option span {
+      display: block;
+      padding: .7rem .8rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      font-size: .92rem;
+      transition: all .2s;
+    }
+
+    .service-option input:checked + span {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .service-option span:hover { border-color: var(--primary); }
+
+    .btn {
+      width: 100%;
+      padding: .95rem;
+      border: none;
+      border-radius: 10px;
+      font: inherit;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #fff;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      transition: transform .1s, filter .2s;
+      margin-top: .5rem;
+    }
+
+    .btn:hover { filter: brightness(.95); }
+    .btn:active { transform: scale(.99); }
+
+    .note {
+      text-align: center;
+      color: var(--muted);
+      font-size: .85rem;
+      margin-top: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: .85rem;
+      padding-bottom: 2rem;
+    }
+
+    @media (max-width: 520px) {
+      .row, .services { grid-template-columns: 1fr; }
+      .card { padding: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🦷 Clínica Dental</h1>
+    <p>Reserva tu cita en pocos segundos</p>
+  </header>
+
+  <main>
+    <form class="card" id="formCita" novalidate>
+      <h2>Datos de la cita</h2>
+
+      <div class="field" id="campoNombre">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" placeholder="Ej: María Pérez" autocomplete="name">
+        <div class="error-msg">Ingresa tu nombre completo.</div>
+      </div>
+
+      <div class="row">
+        <div class="field" id="campoTelefono">
+          <label for="telefono">Teléfono</label>
+          <input type="tel" id="telefono" placeholder="Ej: 0991234567" autocomplete="tel">
+          <div class="error-msg">Ingresa un teléfono válido (mínimo 7 dígitos).</div>
+        </div>
+
+        <div class="field" id="campoEmail">
+          <label for="email">Correo (opcional)</label>
+          <input type="email" id="email" placeholder="correo@ejemplo.com" autocomplete="email">
+          <div class="error-msg">El correo no es válido.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field" id="campoFecha">
+          <label for="fecha">Fecha</label>
+          <input type="date" id="fecha">
+          <div class="error-msg">Selecciona una fecha válida (no pasada).</div>
+        </div>
+
+        <div class="field" id="campoHora">
+          <label for="hora">Hora</label>
+          <select id="hora">
+            <option value="">Selecciona una hora</option>
+            <option>08:00</option><option>09:00</option><option>10:00</option>
+            <option>11:00</option><option>12:00</option><option>14:00</option>
+            <option>15:00</option><option>16:00</option><option>17:00</option>
+            <option>18:00</option>
+          </select>
+          <div class="error-msg">Selecciona una hora.</div>
+        </div>
+      </div>
+
+      <div class="field" id="campoServicio">
+        <label>Tipo de servicio</label>
+        <div class="services">
+          <label class="service-option"><input type="radio" name="servicio" value="Limpieza dental"><span>Limpieza dental</span></label>
+          <label class="service-option"><input type="radio" name="servicio" value="Consulta general"><span>Consulta general</span></label>
+          <label class="service-option"><input type="radio" name="servicio" value="Blanqueamiento"><span>Blanqueamiento</span></label>
+          <label class="service-option"><input type="radio" name="servicio" value="Ortodoncia"><span>Ortodoncia</span></label>
+          <label class="service-option"><input type="radio" name="servicio" value="Extracción"><span>Extracción</span></label>
+          <label class="service-option"><input type="radio" name="servicio" value="Urgencia"><span>Urgencia</span></label>
+        </div>
+        <div class="error-msg">Selecciona un tipo de servicio.</div>
+      </div>
+
+      <div class="field">
+        <label for="motivo">Comentarios (opcional)</label>
+        <textarea id="motivo" placeholder="Describe brevemente tu molestia o necesidad"></textarea>
+      </div>
+
+      <button type="submit" class="btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
+          <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.14c-.25.7-1.43 1.33-1.98 1.42-.5.08-1.14.11-1.84-.12-.42-.13-.97-.31-1.67-.61-2.94-1.27-4.86-4.24-5-4.44-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.3.59-.37.79-.37.2 0 .39 0 .56.01.18.01.42-.07.66.5.25.6.84 2.05.92 2.2.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.17-.31.39-.45.52-.15.15-.3.31-.13.61.17.3.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.34 1.45.3.15.47.12.65-.07.17-.2.75-.87.95-1.17.2-.3.4-.25.67-.15.27.1 1.72.81 2.02.96.3.15.5.22.57.35.07.12.07.72-.18 1.42z"/>
+        </svg>
+        Confirmar por WhatsApp
+      </button>
+
+      <p class="note">Al confirmar se abrirá WhatsApp con los datos de tu cita para enviarla a la clínica.</p>
+    </form>
+  </main>
+
+  <footer>
+    <p>© 2026 Clínica Dental · Todos los derechos reservados</p>
+  </footer>
+
+  <script>
+    // Número de WhatsApp de la clínica (formato internacional, sin + ni espacios)
+    const NUMERO_WHATSAPP = "593988888448";
+
+    const form = document.getElementById("formCita");
+    const fechaInput = document.getElementById("fecha");
+
+    // Impedir seleccionar fechas pasadas
+    const hoy = new Date();
+    const offset = hoy.getTimezoneOffset() * 60000;
+    fechaInput.min = new Date(hoy - offset).toISOString().split("T")[0];
+
+    function mostrarError(campoId, mostrar) {
+      document.getElementById(campoId).classList.toggle("invalid", mostrar);
+    }
+
+    function validarEmail(valor) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
+    }
+
+    function validarFormulario() {
+      const nombre = document.getElementById("nombre").value.trim();
+      const telefono = document.getElementById("telefono").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const fecha = fechaInput.value;
+      const hora = document.getElementById("hora").value;
+      const servicio = document.querySelector('input[name="servicio"]:checked');
+
+      const errores = {
+        campoNombre: nombre.length < 3,
+        campoTelefono: telefono.replace(/\D/g, "").length < 7,
+        campoEmail: email !== "" && !validarEmail(email),
+        campoFecha: !fecha || fecha < fechaInput.min,
+        campoHora: !hora,
+        campoServicio: !servicio
+      };
+
+      let valido = true;
+      for (const [campo, hayError] of Object.entries(errores)) {
+        mostrarError(campo, hayError);
+        if (hayError) valido = false;
+      }
+      return valido;
+    }
+
+    function formatearFecha(fechaISO) {
+      const [anio, mes, dia] = fechaISO.split("-");
+      return `${dia}/${mes}/${anio}`;
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      if (!validarFormulario()) return;
+
+      const nombre = document.getElementById("nombre").value.trim();
+      const telefono = document.getElementById("telefono").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const fecha = formatearFecha(fechaInput.value);
+      const hora = document.getElementById("hora").value;
+      const servicio = document.querySelector('input[name="servicio"]:checked').value;
+      const comentarios = document.getElementById("motivo").value.trim();
+
+      const mensaje =
+        `🦷 *NUEVA SOLICITUD DE CITA*\n\n` +
+        `👤 *Paciente:* ${nombre}\n` +
+        `📞 *Teléfono:* ${telefono}\n` +
+        (email ? `✉️ *Correo:* ${email}\n` : "") +
+        `📅 *Fecha:* ${fecha}\n` +
+        `🕒 *Hora:* ${hora}\n` +
+        `🩺 *Servicio:* ${servicio}\n` +
+        (comentarios ? `📝 *Comentarios:* ${comentarios}\n` : "");
+
+      const url = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, "_blank");
+    });
+
+    // Quitar el error al corregir un campo
+    form.addEventListener("input", (e) => {
+      const campo = e.target.closest(".field");
+      if (campo) campo.classList.remove("invalid");
+    });
+    form.addEventListener("change", (e) => {
+      const campo = e.target.closest(".field");
+      if (campo) campo.classList.remove("invalid");
+    });
+  </script>
+</body>
+</html>
